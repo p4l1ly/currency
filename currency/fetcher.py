@@ -1,14 +1,15 @@
+import re
 from enum import Enum
-import requests
+from .helpers import get
 
-class NoSuccess(Exception): pass
+class NotFound(Exception): pass
 
 class FetchMode(Enum):
     "Enumeration for `fetch_currency`"
     RELIABLE = 1
     LATEST = 2
 
-def fetch_currency(input_code, output_code, mode=FetchMode.RELIABLE):
+def from_all(input_code, output_code, mode=FetchMode.RELIABLE):
     """
     try all implemented techniques to get as good currency as possible
 
@@ -47,11 +48,9 @@ def fetch_currency(input_code, output_code, mode=FetchMode.RELIABLE):
 
     raise e
 
-
-def fetch_from_fixer(input_code, output_code):
+def from_fixer(input_code, output_code):
     """
-    Fetch currency from JSON API at http://api.fixer.io, for example
-    http://api.fixer.io/latest?base=EUR&symbols=USD
+    Fetch currency from JSON API at http://api.fixer.io
 
     :param input_code: input currency code (three uppercase letters)
     :type input_code: `str`
@@ -60,9 +59,58 @@ def fetch_from_fixer(input_code, output_code):
     :type input_code: `str`
     """
 
-    req = requests.get('api.fixer.io/latest?base={}&symbols={}'.format(
+    req = get('http://api.fixer.io/latest?base={}&symbols={}'.format(
         input_code, output_code))
-    req.raise_for_status()
-    req.close()
 
-    return data.json()['rates'][output_code]
+    return req.json()['rates'][output_code]
+
+def from_cnb(input_code, output_code):
+    """
+    Fetch currency from Czech National Bank. This is the only https connection,
+    so it is considered the most reliable. The currencies are not very fresh and
+    they are rounded to three decimal places.
+
+    :param input_code: input currency code (three uppercase letters)
+    :type input_code: `str`
+
+    :param output_code: output currency code (three uppercase letters)
+    :type input_code: `str`
+    """
+
+    if input_code == 'CZK':
+        return 1 / cnb_czk_currency(output_code)
+
+    if output_code == 'CZK':
+        return cnb_czk_currency(input_code)
+
+    inc = cnb_czk_currency(input_code)
+    outc = cnb_czk_currency(output_code)
+    return inc / outc
+
+def cnb_czk_currency(code):
+    """
+    Fetch currency of CZK from Czech National Bank.
+
+    :param code: input currency code (three uppercase letters)
+    :type: `str`
+    """
+
+    def parse_from(path):
+        req = get(BASE + path)
+        match = re.search('(\d+)\|{}\|(\d+,\d+)$'.format(code), req.text, re.M)
+
+        if match:
+            curr = float(re.sub(',', '.', match[2])) / int(match[1])
+
+            # zero currencies are useless (e. g. for Zimbabwe)
+            if curr:
+                return curr
+
+        raise NotFound
+
+    BASE = 'https://www.cnb.cz/cs/financni_trhy/devizovy_trh/'
+
+    try:
+        return parse_from('kurzy_devizoveho_trhu/denni_kurz.txt')
+    except NotFound:
+        return parse_from('kurzy_ostatnich_men/kurzy.txt')

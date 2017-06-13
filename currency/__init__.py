@@ -1,1 +1,1 @@
-from .core import hmm
+from .fetcher import from_all
