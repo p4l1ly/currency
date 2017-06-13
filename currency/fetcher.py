@@ -4,77 +4,62 @@ from .helpers import get
 
 class NotFound(Exception): pass
 
-class FetchMode(Enum):
-    "Enumeration for `fetch_currency`"
-    RELIABLE = 1
-    LATEST = 2
-
-def from_all(input_code, output_code, mode=FetchMode.RELIABLE):
+def from_all(input_code, output_code):
     """
-    try all implemented techniques to get as good currency as possible
+    Try all implemented techniques to get as good currency as possible. The
+    first pick is Yahoo. If it fails, fixer.io and cnb.cz are used as fallbacks.
 
     :param input_code: input currency code (three uppercase letters)
     :type input_code: `str`
 
     :param output_code: output currency code (three uppercase letters)
     :type input_code: `str`
-
-    :param mode: For some currencies there is a problem to get the latest values
-        from some free API. With mode=FetchMode.RELIABLE, it is prefered to get
-        these values from servers that offer the data that are not so fresh, but
-        they are provided in a standardized format and the servers are secured.
-        With mode=FetchMode.LATEST it is prefered to find the values in html
-        pages, internals of which may change and the values may be misleading.
-    :type mode: `FetchMode`
-
-    :type input_code: `FetchMode`
 
     :returns: the currency
     :rtype: `float`
     """
 
-    if mode is FetchMode.RELIABLE:
-        fetches = [fetch_from_cnb, fetch_from_fixer, fetch_from_xe]
-    elif mode is FetchMode.LATEST:
-        fetches = [fetch_from_fixer, fetch_from_xe, fetch_from_cnb]
-    else:
-        raise TypeError('mode should be of FetchMode enum type')
-
-    for fetch in fetches:
+    for fetch in [from_yahoo, from_fixer, from_cnb]:
         try:
             return fetch(input_code, output_code)
         except Exception as e:
-            pass
+            err = e
 
-    raise e
+    raise err
 
 def from_fixer(input_code, output_code):
     """
-    Fetch currency from JSON API at http://api.fixer.io
+    Fetch currency from JSON API at https://api.fixer.io
 
     :param input_code: input currency code (three uppercase letters)
     :type input_code: `str`
 
     :param output_code: output currency code (three uppercase letters)
     :type input_code: `str`
+
+    :returns: the currency
+    :rtype: `float`
     """
 
-    req = get('http://api.fixer.io/latest?base={}&symbols={}'.format(
+    req = get('https://api.fixer.io/latest?base={}&symbols={}'.format(
         input_code, output_code))
 
     return req.json()['rates'][output_code]
 
 def from_cnb(input_code, output_code):
     """
-    Fetch currency from Czech National Bank. This is the only https connection,
-    so it is considered the most reliable. The currencies are not very fresh and
-    they are rounded to three decimal places.
+    Fetch currency from Czech National Bank. The currencies are not very fresh
+    and they are rounded to three decimal places. But there are more of them
+    than on fixer.
 
     :param input_code: input currency code (three uppercase letters)
     :type input_code: `str`
 
     :param output_code: output currency code (three uppercase letters)
     :type input_code: `str`
+
+    :returns: the currency
+    :rtype: `float`
     """
 
     if input_code == 'CZK':
@@ -93,6 +78,9 @@ def cnb_czk_currency(code):
 
     :param code: input currency code (three uppercase letters)
     :type: `str`
+
+    :returns: the currency
+    :rtype: `float`
     """
 
     def parse_from(path):
@@ -114,3 +102,22 @@ def cnb_czk_currency(code):
         return parse_from('kurzy_devizoveho_trhu/denni_kurz.txt')
     except NotFound:
         return parse_from('kurzy_ostatnich_men/kurzy.txt')
+
+def from_yahoo(input_code, output_code):
+    """
+    Fetch currency from Yahoo Finance API. The currencies look fresh, but there
+    is no good documentation about the request parameters.
+
+    :param input_code: input currency code (three uppercase letters)
+    :type input_code: `str`
+
+    :param output_code: output currency code (three uppercase letters)
+    :type input_code: `str`
+
+    :returns: the currency
+    :rtype: `float`
+    """
+
+    req = get('https://download.finance.yahoo.com/d/quotes?s={}{}=X&f=l1'\
+        .format(input_code, output_code))
+    return float(req.text)
