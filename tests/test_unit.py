@@ -42,6 +42,13 @@ class UnitTestSuite(unittest.TestCase):
         print('yahoo: 1 EUR = {} CZK'.format(curr))
         assert(isinstance(curr, float))
 
+    def test_fetcher_good(self):
+        curr = fetcher.from_all('EUR', 'CZK')
+        assert(isinstance(curr, float))
+
+    def test_fetcher_bad(self):
+        assert_raises(fetcher.NotFound, fetcher.from_all, 'quux', 'bazz')
+
     def test_xe_symbol_dict(self):
         code = symbol_dict.from_xe('Lek')
         assert(code == 'ALL')
