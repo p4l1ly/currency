@@ -1,3 +1,7 @@
+"""
+TODO
+"""
+
 import re
 from enum import Enum
 from .helpers import get
@@ -10,13 +14,13 @@ def from_all(input_code, output_code):
     first pick is Yahoo. If it fails, fixer.io and cnb.cz are used as fallbacks.
 
     :param input_code: input currency code (three uppercase letters)
-    :type input_code: `str`
+    :type input_code: :class:`str`
 
     :param output_code: output currency code (three uppercase letters)
-    :type input_code: `str`
+    :type input_code: :class:`str`
 
     :returns: the currency
-    :rtype: `float`
+    :rtype: :class:`float`
     """
 
     for fetch in [from_yahoo, from_fixer, from_cnb]:
@@ -32,13 +36,13 @@ def from_fixer(input_code, output_code):
     Fetch currency from JSON API at https://api.fixer.io
 
     :param input_code: input currency code (three uppercase letters)
-    :type input_code: `str`
+    :type input_code: :class:`str`
 
     :param output_code: output currency code (three uppercase letters)
-    :type input_code: `str`
+    :type input_code: :class:`str`
 
     :returns: the currency
-    :rtype: `float`
+    :rtype: :class:`float`
     """
 
     req = get('https://api.fixer.io/latest?base={}&symbols={}'.format(
@@ -53,13 +57,13 @@ def from_cnb(input_code, output_code):
     than on fixer.
 
     :param input_code: input currency code (three uppercase letters)
-    :type input_code: `str`
+    :type input_code: :class:`str`
 
     :param output_code: output currency code (three uppercase letters)
-    :type input_code: `str`
+    :type input_code: :class:`str`
 
     :returns: the currency
-    :rtype: `float`
+    :rtype: :class:`float`
     """
 
     if input_code == 'CZK':
@@ -77,10 +81,10 @@ def cnb_czk_currency(code):
     Fetch currency of CZK from Czech National Bank.
 
     :param code: input currency code (three uppercase letters)
-    :type: `str`
+    :type: :class:`str`
 
     :returns: the currency
-    :rtype: `float`
+    :rtype: :class:`float`
     """
 
     def parse_from(path):
@@ -109,13 +113,13 @@ def from_yahoo(input_code, output_code):
     is no good documentation about the request parameters.
 
     :param input_code: input currency code (three uppercase letters)
-    :type input_code: `str`
+    :type input_code: :class:`str`
 
     :param output_code: output currency code (three uppercase letters)
-    :type input_code: `str`
+    :type input_code: :class:`str`
 
     :returns: the currency
-    :rtype: `float`
+    :rtype: :class:`float`
     """
 
     req = get('https://download.finance.yahoo.com/d/quotes?s={}{}=X&f=l1'\

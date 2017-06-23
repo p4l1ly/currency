@@ -1,3 +1,7 @@
+"""
+TODO
+"""
+
 from lxml import html
 from .helpers import get
 import os
@@ -12,10 +16,10 @@ def from_all(symbol):
     http://www.xe.com/symbols.php, use static table as fallback.
 
     :param symbol: symbol to convert
-    :type symbol: `str`
+    :type symbol: :class:`str`
 
     :returns: currency code
-    :rtype: `str`
+    :rtype: :class:`str`
     """
     for dict_fn in [from_xe, from_static]:
         try:
@@ -31,10 +35,10 @@ def from_xe(symbol):
     convert the symbol into currency code.
 
     :param symbol: symbol to convert
-    :type symbol: `str`
+    :type symbol: :class:`str`
 
     :returns: currency code
-    :rtype: `str`
+    :rtype: :class:`str`
     """
     text = get('http://www.xe.com/symbols.php').text
     root = html.fromstring(text)
@@ -51,10 +55,10 @@ def symbol_ords(symbol):
     character separated by comma.
 
     :param symbol: string to convert
-    :type symbol: `str`
+    :type symbol: :class:`str`
 
     :returns: decimal ordinal representations of each input character
-    :rtype: `str` (integers separated by commas)
+    :rtype: :class:`str` (integers separated by commas)
     """
     return ', '.join(str(ord(x)) for x in symbol)
 
@@ -62,13 +66,13 @@ def xe_to_dict(root):
     """
     Convert the static page downloaded (downloaded from
     http://www.xe.com/symbols.php on 13th June 2017) into symbol to code table
-    in form of Python `dict` for simplicity and performance.
+    in form of Python :class:`dict` for simplicity and performance.
 
     :param root: root node of html page
-    :type root: `lxml.html.HtmlElement`
+    :type root: :class:`lxml.html.HtmlElement`
 
     :returns: dictionary that maps currency symbols to currency codes
-    :rtype: `dict`<`str`: `str`>
+    :rtype: :class:`dict` <:class:`str`: :class:`str`>
     """
     rows = root.xpath("""
         .//table[@class="currencySymblTable"]
@@ -95,10 +99,10 @@ def from_static(symbol):
     2017) to convert the symbol into currency code.
 
     :param symbol: symbol to convert
-    :type symbol: `str`
+    :type symbol: :class:`str`
 
     :returns: currency code
-    :rtype: `str`
+    :rtype: :class:`str`
     """
     return static_dict[symbol]
 
