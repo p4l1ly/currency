@@ -2,4 +2,4 @@ init:
 	pip install -r requirements.txt
 
 test:
-	nosetests --nocapture tests
+	nosetests --nocapture --with-coverage --cover-package currency tests
