@@ -5,6 +5,7 @@ TODO
 import re
 from enum import Enum
 from .helpers import get
+from decimal import Decimal
 
 class NotFound(Exception): pass
 
@@ -20,7 +21,7 @@ def from_all(input_code, output_code):
     :type input_code: :class:`str`
 
     :returns: the currency
-    :rtype: :class:`float`
+    :rtype: :class:`decimal.Decimal`
     """
 
     for fetch in [from_yahoo, from_fixer, from_cnb]:
@@ -42,13 +43,13 @@ def from_fixer(input_code, output_code):
     :type input_code: :class:`str`
 
     :returns: the currency
-    :rtype: :class:`float`
+    :rtype: :class:`decimal.Decimal`
     """
 
     req = get('https://api.fixer.io/latest?base={}&symbols={}'.format(
         input_code, output_code))
 
-    return req.json()['rates'][output_code]
+    return req.json(parse_float=Decimal)['rates'][output_code]
 
 def from_cnb(input_code, output_code):
     """
@@ -63,11 +64,11 @@ def from_cnb(input_code, output_code):
     :type input_code: :class:`str`
 
     :returns: the currency
-    :rtype: :class:`float`
+    :rtype: :class:`decimal.Decimal`
     """
 
     if input_code == 'CZK':
-        return 1 / cnb_czk_currency(output_code)
+        return Decimal('1') / cnb_czk_currency(output_code)
 
     if output_code == 'CZK':
         return cnb_czk_currency(input_code)
@@ -84,7 +85,7 @@ def cnb_czk_currency(code):
     :type: :class:`str`
 
     :returns: the currency
-    :rtype: :class:`float`
+    :rtype: :class:`decimal.Decimal`
     """
 
     def parse_from(path):
@@ -92,7 +93,7 @@ def cnb_czk_currency(code):
         match = re.search('(\d+)\|{}\|(\d+,\d+)$'.format(code), req.text, re.M)
 
         if match:
-            curr = float(re.sub(',', '.', match[2])) / int(match[1])
+            curr = Decimal(re.sub(',', '.', match[2])) / int(match[1])
 
             # zero currencies are useless (e. g. for Zimbabwe)
             if curr:
@@ -119,9 +120,9 @@ def from_yahoo(input_code, output_code):
     :type input_code: :class:`str`
 
     :returns: the currency
-    :rtype: :class:`float`
+    :rtype: :class:`decimal.Decimal`
     """
 
     req = get('https://download.finance.yahoo.com/d/quotes?s={}{}=X&f=l1'\
         .format(input_code, output_code))
-    return float(req.text)
+    return Decimal(req.text)
