@@ -58,6 +58,10 @@ class UnitTestSuite(unittest.TestCase):
         code = symbol_dict.from_xe('₱')
         assert(code == 'CUP')
 
+    def test_babel_symbol_dict(self):
+        code = symbol_dict.from_babel('₹')
+        assert(code == 'INR')
+
     def test_symbol_dict(self):
         assert_raises(KeyError, symbol_dict.from_all, 'foobar')
 

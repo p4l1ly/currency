@@ -5,6 +5,7 @@ TODO
 from lxml import html
 from .helpers import get
 import os
+import babel
 
 up = os.path.dirname
 STATIC_PATH = os.path.join(
@@ -21,13 +22,32 @@ def from_all(symbol):
     :returns: currency code
     :rtype: :class:`str`
     """
-    for dict_fn in [from_xe, from_static]:
+    for dict_fn in [from_babel, from_xe, from_static]:
         try:
             return dict_fn(symbol)
         except Exception as e:
             err = e
 
     raise err
+
+def from_babel(symbol):
+    """
+    Use babel library with en.US locale to convert the symbol into currency
+    code.
+
+    :param symbol: symbol to convert
+    :type symbol: :class:`str`
+
+    :returns: currency code
+    :rtype: :class:`str`
+    """
+    # lazy loading of babel table
+    if not hasattr(from_babel, 'table'):
+        locale = babel.Locale('en', 'US')
+        from_babel.table = {symbol: code
+            for code, symbol in locale.currency_symbols.items()}
+
+    return from_babel.table[symbol]
 
 def from_xe(symbol):
     """
@@ -104,6 +124,9 @@ def from_static(symbol):
     :returns: currency code
     :rtype: :class:`str`
     """
-    return static_dict[symbol]
 
-static_dict = xe_to_dict(html.parse(STATIC_PATH))
+    # lazy loading of static table
+    if not hasattr(from_static, 'table'):
+        from_static.table = xe_to_dict(html.parse(STATIC_PATH))
+
+    return from_static.table[symbol]
