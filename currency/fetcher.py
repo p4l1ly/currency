@@ -3,11 +3,97 @@ TODO
 """
 
 import re
-from enum import Enum
-from .helpers import get
 from decimal import Decimal
+from functools import partial
+from .helpers import get
+import currency.symbol_dict as symbol_dict
 
 class NotFound(Exception): pass
+
+def currency(input_repr, output_repr):
+    """
+    Get currency by all implemented means (from modules :mod:`currency.fetcher`
+    and :mod:`currency.symbol_dict`) to get the currency. The least reliable of
+    all functions is :fun:`symbol_dict.from_xe` (it is only parsing of a online
+    html, internals of which may change anytime and the connection is not even
+    secured). We use it only if all other methods fail.
+
+    :param input_repr: input currency code or symbol
+    :type input_code: :class:`str`
+
+    :param output_repr: output currency code or symbol
+    :type output_code: :class:`str`
+
+    :returns: the currency
+    :rtype: :class:`decimal.Decimal`
+    """
+
+    input_code = symbol_dict.repr_to_code(input_repr)
+    output_code = symbol_dict.repr_to_code(output_repr)
+
+    if input_code and output_code:
+        return from_all(input_code, output_code)
+
+    # the input_code is known, the output_code is unknown
+    if input_code:
+        if re.search('^[A-Z]{3}$', output_repr):
+            try:
+                return from_all(input_code, output_repr)
+            except:
+                output_code = symbol_dict.from_xe(output_repr)
+                return from_all(input_code, output_code)
+
+        else:
+            output_code = symbol_dict.from_xe(output_repr)
+            return from_all(input_code, output_code)
+
+    # the output_code is known, the input_code is unknown
+    if output_code:
+        if re.search('^[A-Z]{3}$', input_repr):
+            try:
+                return from_all(input_repr, output_code)
+            except:
+                input_code = symbol_dict.from_xe(input_repr)
+                return from_all(input_code, output_code)
+
+        else:
+            input_code = symbol_dict.from_xe(input_repr)
+            return from_all(input_code, output_code)
+
+    # both codes are unknown
+    input_might_be_code, output_might_be_code =\
+        map(partial(re.search, '^[A-Z]{3}$'), [input_repr, output_repr])
+
+    if input_might_be_code and output_might_be_code:
+        try:
+            return from_all(input_repr, output_repr)
+        except:
+            input_code = symbol_dict.from_xe(input_repr)
+            output_code = symbol_dict.from_xe(output_repr)
+            return from_all(input_code, output_code)
+
+    if input_might_be_code:
+        output_code = symbol_dict.from_xe(output_repr)
+        try:
+            return from_all(input_repr, output_code)
+        except:
+            input_code = symbol_dict.from_xe(input_repr)
+            return from_all(input_code, output_code)
+
+    if output_might_be_code:
+        input_code = symbol_dict.from_xe(input_repr)
+        try:
+            return from_all(input_code, output_repr)
+        except:
+            output_code = symbol_dict.from_xe(output_repr)
+            return from_all(input_code, output_code)
+
+    # both inputs are unable to be translated by symbol_dict.currency and they
+    # cannot be currency codes. Let's try to translate them by
+    # :fun:`symbol_dict.from_xe`.
+    input_code = symbol_dict.from_xe(input_repr)
+    output_code = symbol_dict.from_xe(output_repr)
+    return from_all(input_repr, output_code)
 
 def from_all(input_code, output_code):
     """

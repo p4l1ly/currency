@@ -65,5 +65,20 @@ class UnitTestSuite(unittest.TestCase):
     def test_symbol_dict(self):
         assert_raises(KeyError, symbol_dict.from_all, 'foobar')
 
+    def test_currency_fetch(self):
+        curr = fetcher.currency('€', 'CZK')
+        assert(isinstance(curr, Decimal))
+
+    def test_currency_fetch_error(self):
+        assert_raises(Exception, fetcher.currency, '€', 'foobar')
+        assert_raises(Exception, fetcher.currency, '€', 'GQF')
+        assert_raises(Exception, fetcher.currency, '€', 'abcd')
+        assert_raises(Exception, fetcher.currency, 'GQF', '€')
+        assert_raises(Exception, fetcher.currency, 'abcd', '€')
+        assert_raises(Exception, fetcher.currency, 'GQF', 'GQQ')
+        assert_raises(Exception, fetcher.currency, 'abcd', 'GQQ')
+        assert_raises(Exception, fetcher.currency, 'GQQ', 'abcd')
+        assert_raises(Exception, fetcher.currency, 'efgh', 'abcd')
+
 if __name__ == '__main__':
     unittest.main()

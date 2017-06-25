@@ -7,9 +7,34 @@ from .helpers import get
 import os
 import babel
 
+locale = babel.Locale('en', 'US')
+
 up = os.path.dirname
 STATIC_PATH = os.path.join(
     up(up(os.path.realpath(__file__))), 'resources', 'symbols.html')
+
+def repr_to_code(code_or_sym):
+    """
+    Take arbitrary currency representation (currency code or symbol). If it is a
+    code, return it. If it is a symbol, try to use :fun:`from_babel` and
+    :fun:`from_static` to convert it to the currency code.
+
+    :param symbol: currency symbol or code
+    :type symbol: :class:`str`
+
+    :returns: currency code or :class:`None` if unsuccessful
+    :rtype: :class:`str` or :class:`None`
+    """
+    if code_or_sym in locale.currencies:
+        return code_or_sym
+
+    try:
+        return from_babel(code_or_sym)
+    except KeyError:
+        try:
+            return from_static(code_or_sym)
+        except KeyError:
+            return None
 
 def from_all(symbol):
     """
@@ -43,7 +68,6 @@ def from_babel(symbol):
     """
     # lazy loading of babel table
     if not hasattr(from_babel, 'table'):
-        locale = babel.Locale('en', 'US')
         from_babel.table = {symbol: code
             for code, symbol in locale.currency_symbols.items()}
 
