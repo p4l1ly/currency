@@ -19,7 +19,7 @@ class UnitTestSuite(unittest.TestCase):
         assert(isinstance(curr, Decimal))
 
     def test_cnb_czk(self):
-        curr = fetcher.cnb_czk_currency('EUR')
+        curr = fetcher.cnb_czk('EUR')
         print('cnb: 1 EUR = {} CZK'.format(curr))
         assert(isinstance(curr, Decimal))
 
@@ -79,6 +79,18 @@ class UnitTestSuite(unittest.TestCase):
         assert_raises(Exception, fetcher.currency, 'abcd', 'GQQ')
         assert_raises(Exception, fetcher.currency, 'GQQ', 'abcd')
         assert_raises(Exception, fetcher.currency, 'efgh', 'abcd')
+
+    def test_all_currencies_fetch(self):
+        currs, failed = fetcher.all_currencies('€')
+
+        assert(isinstance(currs, dict))
+        assert(isinstance(failed, list))
+        k = next(iter(currs))
+        assert(isinstance(k, str))
+        assert(isinstance(currs[k], Decimal))
+
+        print('all_currencies OK count:', len(currs))
+        print('all_currencies failed:', failed)
 
 if __name__ == '__main__':
     unittest.main()

@@ -38,8 +38,9 @@ def repr_to_code(code_or_sym):
 
 def from_all(symbol):
     """
-    Convert currency symbol into currency code. Try to find it by scraping
-    http://www.xe.com/symbols.php, use static table as fallback.
+    Convert currency symbol into currency code. Try to find it with babel
+    library, use :func:`currency.symbol_dict.from_xe` and
+    :func:`currency.symbol_dict.from_static` as fallbacks.
 
     :param symbol: symbol to convert
     :type symbol: :class:`str`
