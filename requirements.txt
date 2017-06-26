@@ -3,3 +3,4 @@ coverage
 sphinx
 requests
 babel
+simplejson

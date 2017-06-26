@@ -9,7 +9,7 @@ with open('LICENSE') as f:
     license = f.read()
 
 setup(
-    name='sample',
+    name='currency',
     version='0.1.0',
     description='Currency converter',
     long_description=readme,
@@ -17,5 +17,7 @@ setup(
     author_email='pavol.vargovcik@gmail.com',
     url='https://github.com/p4l1ly/currency',
     license=license,
-    packages=find_packages(exclude=('tests', 'docs'))
+    packages=find_packages(exclude=('tests', 'docs')),
+    package_data={'currency': ['symbols.html']},
+    scripts=['scripts/currency_converter.py']
 )

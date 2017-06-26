@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from nose.tools import assert_raises
+from nose.tools import assert_raises, assert_equal
 import unittest
 
 from decimal import Decimal
-import requests
 
 from .context import currency
 import currency.fetcher as fetcher
@@ -66,7 +65,9 @@ class UnitTestSuite(unittest.TestCase):
         assert_raises(KeyError, symbol_dict.from_all, 'foobar')
 
     def test_currency_fetch(self):
-        curr = fetcher.currency('€', 'CZK')
+        input_code, output_code, curr = fetcher.currency('€', 'CZK')
+        assert(isinstance(input_code, str))
+        assert(isinstance(output_code, str))
         assert(isinstance(curr, Decimal))
 
     def test_currency_fetch_error(self):
@@ -81,8 +82,11 @@ class UnitTestSuite(unittest.TestCase):
         assert_raises(Exception, fetcher.currency, 'efgh', 'abcd')
 
     def test_all_currencies_fetch(self):
-        currs, failed = fetcher.all_currencies('€')
+        input_code, currs, failed = fetcher.all_currencies('€')
+        input_code2, currs2, failed2 = fetcher.all_currencies('EUR')
 
+        assert_equal(input_code, input_code2)
+        assert(isinstance(input_code, str))
         assert(isinstance(currs, dict))
         assert(isinstance(failed, list))
         k = next(iter(currs))

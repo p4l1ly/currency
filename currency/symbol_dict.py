@@ -10,8 +10,7 @@ import babel
 locale = babel.Locale('en', 'US')
 
 up = os.path.dirname
-STATIC_PATH = os.path.join(
-    up(up(os.path.realpath(__file__))), 'resources', 'symbols.html')
+STATIC_PATH = os.path.join(up(os.path.realpath(__file__)), 'symbols.html')
 
 def repr_to_code(code_or_sym):
     """

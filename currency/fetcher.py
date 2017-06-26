@@ -24,41 +24,44 @@ def currency(input_repr, output_repr):
     :param output_repr: output currency code or symbol
     :type output_code: :class:`str`
 
-    :returns: the currency
-    :rtype: :class:`decimal.Decimal`
+    :returns: input code, output code and the currency
+    :rtype: (:class:`str`, :class:`str`, :class:`decimal.Decimal`)
     """
+
+    def get_result(input_code, output_code):
+        return input_code, output_code, from_all(input_code, output_code)
 
     input_code = symbol_dict.repr_to_code(input_repr)
     output_code = symbol_dict.repr_to_code(output_repr)
 
     if input_code and output_code:
-        return from_all(input_code, output_code)
+        return get_result(input_code, output_code)
 
     # the input_code is known, the output_code is unknown
     if input_code:
         if re.search('^[A-Z]{3}$', output_repr):
             try:
-                return from_all(input_code, output_repr)
+                return get_result(input_code, output_repr)
             except:
                 output_code = symbol_dict.from_xe(output_repr)
-                return from_all(input_code, output_code)
+                return get_result(input_code, output_code)
 
         else:
             output_code = symbol_dict.from_xe(output_repr)
-            return from_all(input_code, output_code)
+            return get_result(input_code, output_code)
 
     # the output_code is known, the input_code is unknown
     if output_code:
         if re.search('^[A-Z]{3}$', input_repr):
             try:
-                return from_all(input_repr, output_code)
+                return get_result(input_repr, output_code)
             except:
                 input_code = symbol_dict.from_xe(input_repr)
-                return from_all(input_code, output_code)
+                return get_result(input_code, output_code)
 
         else:
             input_code = symbol_dict.from_xe(input_repr)
-            return from_all(input_code, output_code)
+            return get_result(input_code, output_code)
 
     # both codes are unknown
     input_might_be_code, output_might_be_code =\
@@ -66,34 +69,34 @@ def currency(input_repr, output_repr):
 
     if input_might_be_code and output_might_be_code:
         try:
-            return from_all(input_repr, output_repr)
+            return get_result(input_repr, output_repr)
         except:
             input_code = symbol_dict.from_xe(input_repr)
             output_code = symbol_dict.from_xe(output_repr)
-            return from_all(input_code, output_code)
+            return get_result(input_code, output_code)
 
     if input_might_be_code:
         output_code = symbol_dict.from_xe(output_repr)
         try:
-            return from_all(input_repr, output_code)
+            return get_result(input_repr, output_code)
         except:
             input_code = symbol_dict.from_xe(input_repr)
-            return from_all(input_code, output_code)
+            return get_result(input_code, output_code)
 
     if output_might_be_code:
         input_code = symbol_dict.from_xe(input_repr)
         try:
-            return from_all(input_code, output_repr)
+            return get_result(input_code, output_repr)
         except:
             output_code = symbol_dict.from_xe(output_repr)
-            return from_all(input_code, output_code)
+            return get_result(input_code, output_code)
 
     # both inputs are unable to be translated by symbol_dict.currency and they
     # cannot be currency codes. Let's try to translate them by
     # symbol_dict.from_xe.
     input_code = symbol_dict.from_xe(input_repr)
     output_code = symbol_dict.from_xe(output_repr)
-    return from_all(input_repr, output_code)
+    return get_result(input_repr, output_code)
 
 def all_currencies(input_repr, yahoo=False):
     """
@@ -110,10 +113,14 @@ def all_currencies(input_repr, yahoo=False):
                   between fixer and cnb)
     :type yahoo: :class:`bool`
 
-    :returns: dict of currencies
-    :rtype: :class:`dict` <:class:`str` : :class:`decimal.Decimal`>
+    :returns: input code, output code and dict of currencies
+    :rtype: (:class:`str`, :class:`str`,
+        :class:`dict` <:class:`str` : :class:`decimal.Decimal`>)
     """
-    input_code = symbol_dict.from_all(input_repr)
+    try:
+        input_code = symbol_dict.from_all(input_repr)
+    except:
+        input_code = input_repr
 
     try:
         result = from_fixer_all_outputs(input_code)
@@ -138,7 +145,7 @@ def all_currencies(input_repr, yahoo=False):
             except:
                 failed.append(output_code)
 
-    return result, failed
+    return input_code, result, failed
 
 def from_fixer_all_outputs(input_code):
     """
