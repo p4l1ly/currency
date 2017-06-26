@@ -9,8 +9,9 @@ class ApiTestSuite(unittest.TestCase):
     """Currency converter server testing."""
 
     def setUp(self):
-        server.app.testing = True
-        self.app = server.app.test_client()
+        app = server.init_app()
+        app.testing = True
+        self.app = app.test_client()
 
     def test_one(self):
         response = self.app.get("/currency_converter"
