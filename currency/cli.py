@@ -36,10 +36,17 @@ __email__      = u"pavol.vargovcik@gmail.com"
 __status__     = u"Development"
 __docformat__  = u'reStructuredText'
 
+if __name__ == '__main__':
+    import sys
+    import os
+
+    path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    sys.path.insert(0, path)
+
+
 import argparse
 import decimal
 import currency.app as currency
-import sys
 from builtins import str
 
 def ustr(s):

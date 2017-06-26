@@ -5,15 +5,15 @@ This modules provides functions to fetch money currencies from various online
 APIs.
 """
 
-__author__     = "Pavol Vargovčík"
-__copyright__  = "Copyright (c) 2017 Pavol Vargovčík"
-__credits__    = ["Pavol Vargovčík"]
-__license__    = "MIT"
-__version__    = "0.1.0"
-__maintainer__ = "Pavol Vargovčík"
-__email__      = "pavol.vargovcik@gmail.com"
-__status__     = "Development"
-__docformat__  = 'reStructuredText'
+__author__     = u"Pavol Vargovčík"
+__copyright__  = u"Copyright (c) 2017 Pavol Vargovčík"
+__credits__    = [u"Pavol Vargovčík"]
+__license__    = u"MIT"
+__version__    = u"0.1.0"
+__maintainer__ = u"Pavol Vargovčík"
+__email__      = u"pavol.vargovcik@gmail.com"
+__status__     = u"Development"
+__docformat__  = u'reStructuredText'
 
 import re
 from decimal import Decimal
@@ -42,7 +42,10 @@ def currency(input_repr, output_repr):
     """
 
     def get_result(input_code, output_code):
-        return input_code, output_code, from_all(input_code, output_code)
+        try:
+            return input_code, output_code, from_all(input_code, output_code)
+        except (IndexError, NotFound):
+            return input_code, output_code, None
 
     input_code = symbol_dict.repr_to_code(input_repr)
     output_code = symbol_dict.repr_to_code(output_repr)
@@ -52,7 +55,7 @@ def currency(input_repr, output_repr):
 
     # the input_code is known, the output_code is unknown
     if input_code:
-        if re.search('^[A-Z]{3}$', output_repr):
+        if re.search(u'^[A-Z]{3}$', output_repr):
             try:
                 return get_result(input_code, output_repr)
             except:
@@ -65,7 +68,7 @@ def currency(input_repr, output_repr):
 
     # the output_code is known, the input_code is unknown
     if output_code:
-        if re.search('^[A-Z]{3}$', input_repr):
+        if re.search(u'^[A-Z]{3}$', input_repr):
             try:
                 return get_result(input_repr, output_code)
             except:
@@ -78,7 +81,7 @@ def currency(input_repr, output_repr):
 
     # both codes are unknown
     input_might_be_code, output_might_be_code =\
-        map(partial(re.search, '^[A-Z]{3}$'), [input_repr, output_repr])
+        map(partial(re.search, u'^[A-Z]{3}$'), [input_repr, output_repr])
 
     if input_might_be_code and output_might_be_code:
         try:
@@ -170,8 +173,8 @@ def from_fixer_all_outputs(input_code):
     :returns: dict of currencies
     :rtype: :class:`dict` <:class:`str` : :class:`decimal.Decimal`>
     """
-    req = get('https://api.fixer.io/latest?base={}'.format(input_code))
-    return req.json(parse_float=Decimal)['rates']
+    req = get(u'https://api.fixer.io/latest?base={}'.format(input_code))
+    return req.json(parse_float=Decimal)[u'rates']
 
 def from_fixer(input_code, output_code):
     u"""
@@ -187,10 +190,10 @@ def from_fixer(input_code, output_code):
     :rtype: :class:`decimal.Decimal`
     """
 
-    req = get('https://api.fixer.io/latest?base={}&symbols={}'.format(
+    req = get(u'https://api.fixer.io/latest?base={}&symbols={}'.format(
         input_code, output_code))
 
-    return req.json(parse_float=Decimal)['rates'][output_code]
+    return req.json(parse_float=Decimal)[u'rates'][output_code]
 
 def from_cnb(input_code, output_code):
     u"""
@@ -208,10 +211,10 @@ def from_cnb(input_code, output_code):
     :rtype: :class:`decimal.Decimal`
     """
 
-    if input_code == 'CZK':
+    if input_code == u'CZK':
         return Decimal('1') / cnb_czk(output_code)
 
-    if output_code == 'CZK':
+    if output_code == u'CZK':
         return cnb_czk(input_code)
 
     inc = cnb_czk(input_code)
@@ -222,9 +225,9 @@ class CNB:
     u"""
     Czech National Bank webpage URLs
     """
-    BASE = 'https://www.cnb.cz/cs/financni_trhy/devizovy_trh/'
-    DAILY = 'kurzy_devizoveho_trhu/denni_kurz.txt'
-    MONTHLY = 'kurzy_ostatnich_men/kurzy.txt'
+    BASE = u'https://www.cnb.cz/cs/financni_trhy/devizovy_trh/'
+    DAILY = u'kurzy_devizoveho_trhu/denni_kurz.txt'
+    MONTHLY = u'kurzy_ostatnich_men/kurzy.txt'
 
 def from_cnb_all_outputs(input_code):
     u"""
@@ -241,17 +244,17 @@ def from_cnb_all_outputs(input_code):
 
     for path in [CNB.DAILY, CNB.MONTHLY]:
         req = get(CNB.BASE + path)
-        for match in re.finditer('(\d+)\|([^|]+)\|(\d+,\d+)$', req.text, re.M):
-            curr = Decimal(re.sub(',', '.', match.group(3))) \
+        for match in re.finditer(u'(\d+)\|([^|]+)\|(\d+,\d+)$', req.text, re.M):
+            curr = Decimal(re.sub(u',', u'.', match.group(3))) \
                  / int(match.group(1))
             if curr:
                 result[match.group(2)] = curr
 
-    if input_code == 'CZK':
-        return {k: Decimal('1') / v for k, v in result.items()}
+    if input_code == u'CZK':
+        return {k: Decimal(u'1') / v for k, v in result.items()}
     else:
         inc = result[input_code]
-        result['CZK'] = 1
+        result[u'CZK'] = 1
         return {k: inc / outc for k, outc in result.items()}
 
 def cnb_czk(code):
@@ -267,10 +270,10 @@ def cnb_czk(code):
 
     def parse_from(path):
         req = get(CNB.BASE + path)
-        match = re.search('(\d+)\|{}\|(\d+,\d+)$'.format(code), req.text, re.M)
+        match = re.search(u'(\d+)\|{}\|(\d+,\d+)$'.format(code), req.text, re.M)
 
         if match:
-            curr = Decimal(re.sub(',', '.', match.group(2))) \
+            curr = Decimal(re.sub(u',', u'.', match.group(2))) \
                  / int(match.group(1))
 
             # zero currencies are useless (e. g. for Zimbabwe)
@@ -299,7 +302,7 @@ def from_yahoo(input_code, output_code):
     :rtype: :class:`decimal.Decimal`
     """
 
-    req = get('https://download.finance.yahoo.com/d/quotes?s={}{}=X&f=l1'\
+    req = get(u'https://download.finance.yahoo.com/d/quotes?s={}{}=X&f=l1'\
         .format(input_code, output_code))
     return Decimal(req.text)
 

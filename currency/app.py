@@ -66,14 +66,10 @@ def app(amount, input_currency, output_currency=None):
     :rtype: :class:`str`
     """
     if output_currency:
-        try:
-            input_code, output_code, curr = currency.fetcher.currency(
-                input_currency, output_currency)
-            output = {output_code: curr * amount}
+        input_code, output_code, curr = currency.fetcher.currency(
+            input_currency, output_currency)
 
-        except (IndexError, currency.fetcher.NotFound):
-            input_code = input_currency
-            output = {}
+        output = {output_code: curr * amount} if curr is not None else {}
 
         return pretty_json(amount, input_code, output)
 
