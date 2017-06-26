@@ -118,9 +118,9 @@ def symbol_ords(symbol):
 
 def xe_to_dict(root):
     """
-    Convert the static page downloaded (downloaded from
-    http://www.xe.com/symbols.php on 13th June 2017) into symbol to code table
-    in form of Python :class:`dict` for simplicity and performance.
+    Convert the static page (downloaded from http://www.xe.com/symbols.php on
+    13th June 2017) into symbol to code table in form of Python :class:`dict`
+    for simplicity and performance.
 
     :param root: root node of html page
     :type root: :class:`lxml.html.HtmlElement`
