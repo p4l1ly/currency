@@ -62,7 +62,7 @@ def app(amount, input_currency, output_currency=None):
                 input_currency, output_currency)
             output = {output_code: curr * amount}
 
-        except IndexError:
+        except (IndexError, currency.fetcher.NotFound):
             input_code = input_currency
             output = {}
 
