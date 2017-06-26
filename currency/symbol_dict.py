@@ -15,8 +15,8 @@ STATIC_PATH = os.path.join(up(os.path.realpath(__file__)), 'symbols.html')
 def repr_to_code(code_or_sym):
     """
     Take arbitrary currency representation (currency code or symbol). If it is a
-    code, return it. If it is a symbol, try to use :fun:`from_babel` and
-    :fun:`from_static` to convert it to the currency code.
+    code, return it. If it is a symbol, try to use :func:`from_babel` and
+    :func:`from_static` to convert it to the currency code.
 
     :param symbol: currency symbol or code
     :type symbol: :class:`str`

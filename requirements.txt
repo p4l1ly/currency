@@ -4,3 +4,5 @@ sphinx
 requests
 babel
 simplejson
+flask
+cherrypy

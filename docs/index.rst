@@ -14,6 +14,7 @@ Contents
    fetcher
    symbol_dict
    helpers
+   app
 
 Indices and tables
 ==================

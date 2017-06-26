@@ -8,4 +8,4 @@ test:
 		  --cover-package currency \
 		  --cover-html             \
 		  --cover-html-dir=htmlcov \
-		  tests.test_cli
+		  tests
