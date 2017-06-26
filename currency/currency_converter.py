@@ -15,12 +15,12 @@ Currency converter CLI application. For more detailed interface description see
 .. sourcecode:: json
 
    {
-       u"input": {
-           u"amount": 10,
-           u"currency": u"EUR"
+       "input": {
+           "amount": 10,
+           "currency": "EUR"
        },
-       u"output": {
-           u"CZK": 262.4100
+       "output": {
+           "CZK": 262.4100
        }
    }
 

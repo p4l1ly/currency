@@ -3,7 +3,7 @@
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
-SPHINXBUILD   = python -msphinx
+SPHINXBUILD   = python3 -msphinx # the docs is supported only for python 3
 SPHINXPROJ    = currency
 SOURCEDIR     = .
 BUILDDIR      = _build

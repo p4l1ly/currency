@@ -48,13 +48,15 @@ def init_app():
            HTTP/1.1 200 OK
            Content-Type: application/json
 
+        .. sourcecode:: json
+
            {
-               u"input": {
-                   u"amount": 1,
-                   u"currency": u"EUR"
+               "input": {
+                   "amount": 1,
+                   "currency": "EUR"
                },
-               u"output": {
-                   u"CZK": 26.2420
+               "output": {
+                   "CZK": 26.2420
                }
            }
 

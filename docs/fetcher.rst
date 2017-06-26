@@ -5,4 +5,4 @@ module fetcher
 
 .. automodule:: currency.fetcher
    :members:
-   :synopsis: fetching currencies from online APIs
+   :synopsis: Fetching currencies from online APIs
