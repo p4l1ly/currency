@@ -72,15 +72,15 @@ class UnitTestSuite(unittest.TestCase):
         assert_is_instance(curr, Decimal)
 
     def test_currency_fetch_error(self):
-        assert_raises(Exception, fetcher.currency, u'€', u'foobar')
-        assert_raises(Exception, fetcher.currency, u'€', u'GQF')
-        assert_raises(Exception, fetcher.currency, u'€', u'abcd')
-        assert_raises(Exception, fetcher.currency, u'GQF', u'€')
-        assert_raises(Exception, fetcher.currency, u'abcd', u'€')
-        assert_raises(Exception, fetcher.currency, u'GQF', u'GQQ')
-        assert_raises(Exception, fetcher.currency, u'abcd', u'GQQ')
-        assert_raises(Exception, fetcher.currency, u'GQQ', u'abcd')
-        assert_raises(Exception, fetcher.currency, u'efgh', u'abcd')
+        assert_equal(fetcher.currency(u'€', u'foobar')[2], None)
+        assert_equal(fetcher.currency(u'€', u'GQF')[2], None)
+        assert_equal(fetcher.currency(u'€', u'abcd')[2], None)
+        assert_equal(fetcher.currency(u'GQF', u'€')[2], None)
+        assert_equal(fetcher.currency(u'abcd', u'€')[2], None)
+        assert_equal(fetcher.currency(u'GQF', u'GQQ')[2], None)
+        assert_equal(fetcher.currency(u'abcd', u'GQQ')[2], None)
+        assert_equal(fetcher.currency(u'GQQ', u'abcd')[2], None)
+        assert_equal(fetcher.currency(u'efgh', u'abcd')[2], None)
 
     def test_all_currencies_fetch(self):
         input_code, currs, failed = fetcher.all_currencies(u'€')

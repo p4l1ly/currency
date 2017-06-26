@@ -42,77 +42,80 @@ def currency(input_repr, output_repr):
     """
 
     def get_result(input_code, output_code):
-        try:
-            return input_code, output_code, from_all(input_code, output_code)
-        except (IndexError, NotFound):
-            return input_code, output_code, None
+        return input_code, output_code, from_all(input_code, output_code)
 
     input_code = symbol_dict.repr_to_code(input_repr)
     output_code = symbol_dict.repr_to_code(output_repr)
 
-    if input_code and output_code:
-        return get_result(input_code, output_code)
+    try:
+        if input_code and output_code:
+            return get_result(input_code, output_code)
 
-    # the input_code is known, the output_code is unknown
-    if input_code:
-        if re.search(u'^[A-Z]{3}$', output_repr):
-            try:
-                return get_result(input_code, output_repr)
-            except:
+        # the input_code is known, the output_code is unknown
+        if input_code:
+            if re.search(u'^[A-Z]{3}$', output_repr):
+                try:
+                    return get_result(input_code, output_repr)
+                except:
+                    output_code = symbol_dict.from_xe(output_repr)
+                    return get_result(input_code, output_code)
+
+            else:
                 output_code = symbol_dict.from_xe(output_repr)
                 return get_result(input_code, output_code)
 
-        else:
-            output_code = symbol_dict.from_xe(output_repr)
-            return get_result(input_code, output_code)
+        # the output_code is known, the input_code is unknown
+        if output_code:
+            if re.search(u'^[A-Z]{3}$', input_repr):
+                try:
+                    return get_result(input_repr, output_code)
+                except:
+                    input_code = symbol_dict.from_xe(input_repr)
+                    return get_result(input_code, output_code)
 
-    # the output_code is known, the input_code is unknown
-    if output_code:
-        if re.search(u'^[A-Z]{3}$', input_repr):
+            else:
+                input_code = symbol_dict.from_xe(input_repr)
+                return get_result(input_code, output_code)
+
+        # both codes are unknown
+        input_might_be_code, output_might_be_code =\
+            map(partial(re.search, u'^[A-Z]{3}$'), [input_repr, output_repr])
+
+        if input_might_be_code and output_might_be_code:
+            try:
+                return get_result(input_repr, output_repr)
+            except:
+                input_code = symbol_dict.from_xe(input_repr)
+                output_code = symbol_dict.from_xe(output_repr)
+                return get_result(input_code, output_code)
+
+        if input_might_be_code:
+            output_code = symbol_dict.from_xe(output_repr)
             try:
                 return get_result(input_repr, output_code)
             except:
                 input_code = symbol_dict.from_xe(input_repr)
                 return get_result(input_code, output_code)
 
-        else:
+        if output_might_be_code:
             input_code = symbol_dict.from_xe(input_repr)
-            return get_result(input_code, output_code)
+            try:
+                return get_result(input_code, output_repr)
+            except:
+                output_code = symbol_dict.from_xe(output_repr)
+                return get_result(input_code, output_code)
 
-    # both codes are unknown
-    input_might_be_code, output_might_be_code =\
-        map(partial(re.search, u'^[A-Z]{3}$'), [input_repr, output_repr])
-
-    if input_might_be_code and output_might_be_code:
-        try:
-            return get_result(input_repr, output_repr)
-        except:
-            input_code = symbol_dict.from_xe(input_repr)
-            output_code = symbol_dict.from_xe(output_repr)
-            return get_result(input_code, output_code)
-
-    if input_might_be_code:
-        output_code = symbol_dict.from_xe(output_repr)
-        try:
-            return get_result(input_repr, output_code)
-        except:
-            input_code = symbol_dict.from_xe(input_repr)
-            return get_result(input_code, output_code)
-
-    if output_might_be_code:
+        # both inputs are unable to be translated by symbol_dict.currency and they
+        # cannot be currency codes. Let's try to translate them by
+        # symbol_dict.from_xe.
         input_code = symbol_dict.from_xe(input_repr)
-        try:
-            return get_result(input_code, output_repr)
-        except:
-            output_code = symbol_dict.from_xe(output_repr)
-            return get_result(input_code, output_code)
+        output_code = symbol_dict.from_xe(output_repr)
+        return get_result(input_repr, output_code)
 
-    # both inputs are unable to be translated by symbol_dict.currency and they
-    # cannot be currency codes. Let's try to translate them by
-    # symbol_dict.from_xe.
-    input_code = symbol_dict.from_xe(input_repr)
-    output_code = symbol_dict.from_xe(output_repr)
-    return get_result(input_repr, output_code)
+    except (IndexError, NotFound):
+        input_repr = input_code or input_repr
+        output_repr = output_code or output_repr
+        return input_repr, output_repr, None
 
 def all_currencies(input_repr, yahoo=False):
     u"""
