@@ -4,6 +4,8 @@ Currency Converter
 This project contains a CLI application and a web server for API of currency
 converter.
 
+.. _params:
+
 Parameters
 **********
 - **amount** - amount which we want to convert - float
@@ -30,8 +32,12 @@ Output
 
 Examples
 ********
+
+.. _cli:
+
 CLI
 ---
+
 .. code::
 
     ./currency_converter.py --amount 100.0 --input_currency EUR --output_currency CZK
@@ -71,6 +77,9 @@ CLI
             .
         }
     }
+
+
+.. _api:
 
 API
 ---

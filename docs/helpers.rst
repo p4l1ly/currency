@@ -5,3 +5,4 @@ module helpers
 
 .. automodule:: currency.helpers
    :members:
+   :synopsis: unsorted functions

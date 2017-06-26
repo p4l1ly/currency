@@ -1,3 +1,18 @@
+"""
+This module implements the user interface of the currency converter application.
+The interface implemented here is common for both the API and the CLI.
+"""
+
+__author__     = "Pavol Vargovčík"
+__copyright__  = "Copyright (c) 2017 Pavol Vargovčík"
+__credits__    = ["Pavol Vargovčík"]
+__license__    = "MIT"
+__version__    = "0.1.0"
+__maintainer__ = "Pavol Vargovčík"
+__email__      = "pavol.vargovcik@gmail.com"
+__status__     = "Development"
+__docformat__  = 'reStructuredText'
+
 import simplejson as json
 import currency.fetcher
 

@@ -19,5 +19,6 @@ setup(
     license=license,
     packages=find_packages(exclude=('tests', 'docs')),
     package_data={'currency': ['symbols.html']},
-    scripts=['scripts/currency_converter.py']
+    scripts=[ 'scripts/currency_converter.py'
+            , 'scripts/currency_converter_server.py' ]
 )

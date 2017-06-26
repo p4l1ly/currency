@@ -1,12 +1,54 @@
 #! /usr/bin/python
 
+"""
+Currency converter CLI application. For more detailed interface description see
+:doc:`README <index>`.
+
+**Example command**:
+
+.. sourcecode:: sh
+
+   python scripts/currency_converter.py --amount 10 --input_currency € --output_currency CZK
+
+**Example result**:
+
+.. sourcecode:: json
+
+   {
+       "input": {
+           "amount": 10,
+           "currency": "EUR"
+       },
+       "output": {
+           "CZK": 262.4100
+       }
+   }
+
+"""
+
+__author__     = "Pavol Vargovčík"
+__copyright__  = "Copyright (c) 2017 Pavol Vargovčík"
+__credits__    = ["Pavol Vargovčík"]
+__license__    = "MIT"
+__version__    = "0.1.0"
+__maintainer__ = "Pavol Vargovčík"
+__email__      = "pavol.vargovcik@gmail.com"
+__status__     = "Development"
+__docformat__  = 'reStructuredText'
+
 import argparse
 import decimal
 import currency.app as currency
 import sys
 
 def main():
-    "run CLI application"
+    """
+    Parse command line arguments and evaluate the :func:`currency.app.app`
+    function.
+
+    :result: pretty formatted JSON string, as described in :doc:`README <index>`
+    :rtype: :class:`str`
+    """
 
     parser = argparse.ArgumentParser(description='Currency converter')
 

@@ -5,8 +5,8 @@
 
 .. include:: ../README.rst
 
-Contents
-========
+Library
+=======
 
 .. toctree::
    :maxdepth: 2
@@ -15,6 +15,15 @@ Contents
    symbol_dict
    helpers
    app
+
+Executables
+===========
+
+.. toctree::
+   :maxdepth: 2
+
+   api
+   cli
 
 Indices and tables
 ==================
