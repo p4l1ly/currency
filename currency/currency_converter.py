@@ -42,6 +42,12 @@ import currency.app as currency
 import sys
 from builtins import str
 
+def ustr(s):
+    try:
+        return str(s)
+    except:
+        return str(s, 'utf8')
+
 def main():
     u"""
     Parse command line arguments and evaluate the :func:`currency.app.app`
@@ -56,10 +62,10 @@ def main():
     parser.add_argument(u"--amount", type=decimal.Decimal, required=True,
         help=u"Amount of money to convert.")
 
-    parser.add_argument(u"--input_currency", type=str, required=True,
+    parser.add_argument(u"--input_currency", type=ustr, required=True,
         help=u"The currency of the money you want to convert.")
 
-    parser.add_argument(u"--output_currency", type=str,
+    parser.add_argument(u"--output_currency", type=ustr,
         help=u"""\
         The currency of the money you want to get from the conversion.
         If omitted, convert to all known currencies.
@@ -67,5 +73,8 @@ def main():
 
     args = parser.parse_args()
 
-    return currency.app(
-        args.amount, args.input_currency, args.output_currency)
+    return currency.app(args.amount, args.input_currency,
+        args.output_currency and args.output_currency)
+
+if __name__ == '__main__':
+    print(main())
