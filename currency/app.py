@@ -17,6 +17,10 @@ __docformat__  = u'reStructuredText'
 
 import simplejson as json
 import currency.fetcher
+from decimal import Decimal, ROUND_HALF_UP
+
+def format_decimal(x):
+    return x.quantize(Decimal('0.001'), rounding=ROUND_HALF_UP)
 
 def pretty_json(amount, input_currency, output):
     u"""
@@ -36,6 +40,11 @@ def pretty_json(amount, input_currency, output):
     """
     data = { u'input': {u'amount': amount, u'currency': input_currency}
            , u'output': output }
+
+    data[u'input'][u'amount'] = format_decimal(data[u'input'][u'amount'])
+    for k in data[u'output']:
+        data[u'output'][k] = format_decimal(data[u'output'][k])
+
     return json.dumps(data, indent=4, sort_keys=True)
 
 def app(amount, input_currency, output_currency=None):
