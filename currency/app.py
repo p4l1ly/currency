@@ -1,23 +1,25 @@
-"""
+# -*- coding: utf-8 -*-
+
+u"""
 This module implements the user interface of the currency converter application.
 The interface implemented here is common for both the API and the CLI.
 """
 
-__author__     = "Pavol Vargovčík"
-__copyright__  = "Copyright (c) 2017 Pavol Vargovčík"
-__credits__    = ["Pavol Vargovčík"]
-__license__    = "MIT"
-__version__    = "0.1.0"
-__maintainer__ = "Pavol Vargovčík"
-__email__      = "pavol.vargovcik@gmail.com"
-__status__     = "Development"
-__docformat__  = 'reStructuredText'
+__author__     = u"Pavol Vargovčík"
+__copyright__  = u"Copyright (c) 2017 Pavol Vargovčík"
+__credits__    = [u"Pavol Vargovčík"]
+__license__    = u"MIT"
+__version__    = u"0.1.0"
+__maintainer__ = u"Pavol Vargovčík"
+__email__      = u"pavol.vargovcik@gmail.com"
+__status__     = u"Development"
+__docformat__  = u'reStructuredText'
 
 import simplejson as json
 import currency.fetcher
 
 def pretty_json(amount, input_currency, output):
-    """
+    u"""
     Present the currency conversion result in the correct format
 
     :param amount: converted amount
@@ -32,12 +34,12 @@ def pretty_json(amount, input_currency, output):
     :result: pretty formatted JSON string, as described in :doc:`README <index>`
     :rtype: :class:`str`
     """
-    data = { 'input': {'amount': amount, 'currency': input_currency}
-           , 'output': output }
+    data = { u'input': {u'amount': amount, u'currency': input_currency}
+           , u'output': output }
     return json.dumps(data, indent=4, sort_keys=True)
 
 def app(amount, input_currency, output_currency=None):
-    """
+    u"""
     Convert the **amount** in **input_currency** to **output_currency**. If
     **output_currency** is :class:`None` , convert to all known currencies.
 

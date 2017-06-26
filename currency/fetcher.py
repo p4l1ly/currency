@@ -1,4 +1,6 @@
-"""
+# -*- coding: utf-8 -*-
+
+u"""
 This modules provides functions to fetch money currencies from various online
 APIs.
 """
@@ -22,7 +24,7 @@ import currency.symbol_dict as symbol_dict
 class NotFound(Exception): pass
 
 def currency(input_repr, output_repr):
-    """
+    u"""
     Get currency by all implemented means (from modules :mod:`currency.fetcher`
     and :mod:`currency.symbol_dict`) to get the currency. The least reliable of
     all functions is :func:`currency.symbol_dict.from_xe` (it is only parsing of
@@ -110,7 +112,7 @@ def currency(input_repr, output_repr):
     return get_result(input_repr, output_code)
 
 def all_currencies(input_repr, yahoo=False):
-    """
+    u"""
     Get all currencies with base **input_repr**. As sources of the currencies
     use functions :func:`from_fixer_all_outputs` and
     :func:`currency.fetcher.from_cnb_all_outputs`. Yahoo source can be also used
@@ -159,7 +161,7 @@ def all_currencies(input_repr, yahoo=False):
     return input_code, result, failed
 
 def from_fixer_all_outputs(input_code):
-    """
+    u"""
     Fetch all currencies with given base from JSON API at https://api.fixer.io
 
     :param input_code: input currency code (three uppercase letters)
@@ -172,7 +174,7 @@ def from_fixer_all_outputs(input_code):
     return req.json(parse_float=Decimal)['rates']
 
 def from_fixer(input_code, output_code):
-    """
+    u"""
     Fetch currency from JSON API at https://api.fixer.io
 
     :param input_code: input currency code (three uppercase letters)
@@ -191,7 +193,7 @@ def from_fixer(input_code, output_code):
     return req.json(parse_float=Decimal)['rates'][output_code]
 
 def from_cnb(input_code, output_code):
-    """
+    u"""
     Fetch currency from Czech National Bank. The currencies are not very fresh
     and they are rounded to three decimal places. But there are more of them
     than on fixer.
@@ -217,7 +219,7 @@ def from_cnb(input_code, output_code):
     return inc / outc
 
 class CNB:
-    """
+    u"""
     Czech National Bank webpage URLs
     """
     BASE = 'https://www.cnb.cz/cs/financni_trhy/devizovy_trh/'
@@ -225,7 +227,7 @@ class CNB:
     MONTHLY = 'kurzy_ostatnich_men/kurzy.txt'
 
 def from_cnb_all_outputs(input_code):
-    """
+    u"""
     Fetch all currencies with given base from Czech National Bank.
 
     :param input_code: input currency code (three uppercase letters)
@@ -240,9 +242,10 @@ def from_cnb_all_outputs(input_code):
     for path in [CNB.DAILY, CNB.MONTHLY]:
         req = get(CNB.BASE + path)
         for match in re.finditer('(\d+)\|([^|]+)\|(\d+,\d+)$', req.text, re.M):
-            curr = Decimal(re.sub(',', '.', match[3])) / int(match[1])
+            curr = Decimal(re.sub(',', '.', match.group(3))) \
+                 / int(match.group(1))
             if curr:
-                result[match[2]] = curr
+                result[match.group(2)] = curr
 
     if input_code == 'CZK':
         return {k: Decimal('1') / v for k, v in result.items()}
@@ -252,7 +255,7 @@ def from_cnb_all_outputs(input_code):
         return {k: inc / outc for k, outc in result.items()}
 
 def cnb_czk(code):
-    """
+    u"""
     Fetch currency of CZK from Czech National Bank.
 
     :param code: input currency code (three uppercase letters)
@@ -267,7 +270,8 @@ def cnb_czk(code):
         match = re.search('(\d+)\|{}\|(\d+,\d+)$'.format(code), req.text, re.M)
 
         if match:
-            curr = Decimal(re.sub(',', '.', match[2])) / int(match[1])
+            curr = Decimal(re.sub(',', '.', match.group(2))) \
+                 / int(match.group(1))
 
             # zero currencies are useless (e. g. for Zimbabwe)
             if curr:
@@ -281,7 +285,7 @@ def cnb_czk(code):
         return parse_from(CNB.MONTHLY)
 
 def from_yahoo(input_code, output_code):
-    """
+    u"""
     Fetch currency from Yahoo Finance API. The currencies look fresh, but there
     is no good documentation about the request parameters.
 
@@ -301,7 +305,7 @@ def from_yahoo(input_code, output_code):
 
 def from_all(input_code, output_code,
     sources=[from_yahoo, from_fixer, from_cnb]):
-    """
+    u"""
     Try all implemented techniques (it can be limited by the **sources**
     parameter) to get as good currency as possible.
 

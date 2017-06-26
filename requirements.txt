@@ -8,3 +8,4 @@ simplejson
 flask
 cherrypy
 lxml
+future

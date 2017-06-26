@@ -1,29 +1,32 @@
-"""
+# -*- coding: utf-8 -*-
+
+u"""
 This modules provides functions to convert currency symbols into currency codes.
 """
 
-__author__     = "Pavol Vargovčík"
-__copyright__  = "Copyright (c) 2017 Pavol Vargovčík"
-__credits__    = ["Pavol Vargovčík"]
-__license__    = "MIT"
-__version__    = "0.1.0"
-__maintainer__ = "Pavol Vargovčík"
-__email__      = "pavol.vargovcik@gmail.com"
-__status__     = "Development"
-__docformat__  = 'reStructuredText'
+__author__     = u"Pavol Vargovčík"
+__copyright__  = u"Copyright (c) 2017 Pavol Vargovčík"
+__credits__    = [u"Pavol Vargovčík"]
+__license__    = u"MIT"
+__version__    = u"0.1.0"
+__maintainer__ = u"Pavol Vargovčík"
+__email__      = u"pavol.vargovcik@gmail.com"
+__status__     = u"Development"
+__docformat__  = u'reStructuredText'
 
 from lxml import html
 from .helpers import get
 import os
 import babel
+from builtins import str, ord, chr
 
-locale = babel.Locale('en', 'US')
+locale = babel.Locale(u'en', u'US')
 
 up = os.path.dirname
-STATIC_PATH = os.path.join(up(os.path.realpath(__file__)), 'symbols.html')
+STATIC_PATH = os.path.join(up(os.path.realpath(__file__)), u'symbols.html')
 
 def repr_to_code(code_or_sym):
-    """
+    u"""
     Take arbitrary currency representation (currency code or symbol). If it is a
     code, return it. If it is a symbol, try to use :func:`from_babel` and
     :func:`from_static` to convert it to the currency code.
@@ -46,7 +49,7 @@ def repr_to_code(code_or_sym):
             return None
 
 def from_all(symbol):
-    """
+    u"""
     Convert currency symbol into currency code. Try to find it with babel
     library, use :func:`currency.symbol_dict.from_xe` and
     :func:`currency.symbol_dict.from_static` as fallbacks.
@@ -66,7 +69,7 @@ def from_all(symbol):
     raise err
 
 def from_babel(symbol):
-    """
+    u"""
     Use babel library with en.US locale to convert the symbol into currency
     code.
 
@@ -77,14 +80,14 @@ def from_babel(symbol):
     :rtype: :class:`str`
     """
     # lazy loading of babel table
-    if not hasattr(from_babel, 'table'):
+    if not hasattr(from_babel, u'table'):
         from_babel.table = {symbol: code
             for code, symbol in locale.currency_symbols.items()}
 
     return from_babel.table[symbol]
 
 def from_xe(symbol):
-    """
+    u"""
     Scrap page http://www.xe.com/symbols.php containing a currency table to
     convert the symbol into currency code.
 
@@ -94,9 +97,9 @@ def from_xe(symbol):
     :returns: currency code
     :rtype: :class:`str`
     """
-    text = get('http://www.xe.com/symbols.php').text
+    text = get(u'http://www.xe.com/symbols.php').text
     root = html.fromstring(text)
-    return root.xpath("""
+    return root.xpath(u"""
         .//table[@class="currencySymblTable"]
         /tr[@class="row1" or @class="row2"]
         /td[6][text()="{}"]/..
@@ -104,7 +107,7 @@ def from_xe(symbol):
         """.format(symbol_ords(symbol)))[0]
 
 def symbol_ords(symbol):
-    """
+    u"""
     Convert utf8 string into string of decimal ordinal representations of each
     character separated by comma.
 
@@ -114,10 +117,10 @@ def symbol_ords(symbol):
     :returns: decimal ordinal representations of each input character
     :rtype: :class:`str` (integers separated by commas)
     """
-    return ', '.join(str(ord(x)) for x in symbol)
+    return u', '.join(str(ord(x)) for x in symbol)
 
 def xe_to_dict(root):
-    """
+    u"""
     Convert the static page (downloaded from http://www.xe.com/symbols.php on
     13th June 2017) into symbol to code table in form of Python :class:`dict`
     for simplicity and performance.
@@ -128,16 +131,16 @@ def xe_to_dict(root):
     :returns: dictionary that maps currency symbols to currency codes
     :rtype: :class:`dict` <:class:`str`: :class:`str`>
     """
-    rows = root.xpath("""
+    rows = root.xpath(u"""
         .//table[@class="currencySymblTable"]
         /tr[@class="row1" or @class="row2"]""")
 
     def symbol(tr):
-        bs = tr.xpath('td[6]/text()')[0].split(', ')
+        bs = tr.xpath(u'td[6]/text()')[0].split(u', ')
         return ''.join(chr(int(x)) for x in bs)
 
     def code(tr):
-        return tr.xpath('td[2]/text()')[0]
+        return tr.xpath(u'td[2]/text()')[0]
 
     def keyval(tr):
         try:
@@ -148,7 +151,7 @@ def xe_to_dict(root):
     return {kv[0]: kv[1] for kv in map(keyval, rows) if kv}
 
 def from_static(symbol):
-    """
+    u"""
     Use static table (downloaded from http://www.xe.com/symbols.php on 13th June
     2017) to convert the symbol into currency code.
 
@@ -160,7 +163,7 @@ def from_static(symbol):
     """
 
     # lazy loading of static table
-    if not hasattr(from_static, 'table'):
+    if not hasattr(from_static, u'table'):
         from_static.table = xe_to_dict(html.parse(STATIC_PATH))
 
     return from_static.table[symbol]
