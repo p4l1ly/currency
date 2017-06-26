@@ -1,6 +1,6 @@
 #! /usr/bin/python
 
-from currency.currency_converter import main
+from currency.cli import main
 
 if __name__ == '__main__':
     print(main())

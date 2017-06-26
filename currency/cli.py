@@ -8,7 +8,7 @@ Currency converter CLI application. For more detailed interface description see
 
 .. sourcecode:: sh
 
-   python scripts/currency_converter.py --amount 10 --input_currency € --output_currency CZK
+   currency_converter.py --amount 10 --input_currency € --output_currency CZK
 
 **Example result**:
 

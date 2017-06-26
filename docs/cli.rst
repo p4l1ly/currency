@@ -3,6 +3,6 @@
 Command Line Interface
 **********************
 
-.. automodule:: currency.currency_converter
+.. automodule:: currency.cli
    :members:
    :synopsis: Command line interface application

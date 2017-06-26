@@ -3,8 +3,8 @@
 API Documentation
 =================
 
-.. automodule:: currency.currency_converter_server
+.. automodule:: currency.api
    :synopsis: API server
 
-.. autoflask:: currency.currency_converter_server:init_app()
+.. autoflask:: currency.api:init_app()
    :undoc-static:

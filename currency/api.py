@@ -98,3 +98,6 @@ def main():
     # Start the CherryPy WSGI web server
     cherrypy.engine.start()
     cherrypy.engine.block()
+
+if __name__ == '__main__':
+    main()

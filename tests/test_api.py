@@ -2,7 +2,7 @@
 
 from nose.tools import assert_is_instance
 import unittest
-import currency.currency_converter_server as server
+import currency.api as server
 
 import json
 

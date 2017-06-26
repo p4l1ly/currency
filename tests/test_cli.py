@@ -3,7 +3,7 @@
 import unittest
 
 from .context import scripts
-import scripts.currency_converter as currency_converter
+import currency.cli as cli
 
 import sys
 import json
@@ -16,7 +16,8 @@ class CliTestSuite(unittest.TestCase):
                    , u'--amount', u'10'
                    , u'--input_currency', u'EUR'
                    , u'--output_currency', u'Kč' ]
-        result = json.loads(currency_converter.main())
+
+        result = json.loads(cli.main())
         assert(u'input' in result)
         assert(u'output' in result)
         assert(u'amount' in result[u'input'])
@@ -27,9 +28,8 @@ class CliTestSuite(unittest.TestCase):
         sys.argv = [ u'currency_converter.py'
                    , u'--amount', u'10'
                    , u'--input_currency', u'EUR' ]
-        currency_converter.main()
 
-        result = json.loads(currency_converter.main())
+        result = json.loads(cli.main())
         assert(u'input' in result)
         assert(u'output' in result)
         assert(u'amount' in result[u'input'])
@@ -42,9 +42,8 @@ class CliTestSuite(unittest.TestCase):
                    , u'--amount', u'10'
                    , u'--input_currency', u'QQQ'
                    , u'--output_currency', u'QQQ' ]
-        currency_converter.main()
 
-        result = json.loads(currency_converter.main())
+        result = json.loads(cli.main())
         assert(u'input' in result)
         assert(u'output' in result)
         assert(u'amount' in result[u'input'])
